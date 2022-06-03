@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+	<Type Name="varray&lt;*&gt;">
+		<DisplayString>varray{{ size = {size_} }}</DisplayString>
+		<StringView>ptr_._Ptr,[size_]</StringView>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">size_</Item>
+			<Item Name="[vsize]" ExcludeView="simple">vsize_</Item>
+			<ArrayItems>
+				<Direction>Forward</Direction>
+				<Rank>1</Rank>
+				<Size>vsize_</Size>
+				<!--<Size>$i==0:size1:size2</Size>-->
+				<ValuePointer>ptr_._Ptr</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+</AutoVisualizer>

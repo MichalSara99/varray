@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{bec3ef6f-7c52-4559-9608-4885701926ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="unit_tests">
+      <UniqueIdentifier>{fd15b44b-f6ed-4d33-b727-62790ea3cbaa}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="varray.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\macros.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\varray.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\varray_traits.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\varray_utils.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="varray_t.cpp">
+      <Filter>unit_tests</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
