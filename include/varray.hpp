@@ -64,6 +64,14 @@ template <typename T> class varray
     varray(varray<T> const &) = default;
     varray(varray<T> &&) = default;
 
+    varray deepcopy() const
+    {
+        varray tmp(size());
+        for (std::size_t i = 0; i < tmp.size(); ++i)
+            tmp[i] = this->operator[](i);
+        return tmp;
+    }
+
     varray &operator=(varray<T> const &) = default;
     varray &operator=(varray<T> &&) = default;
 
@@ -322,12 +330,12 @@ template <typename T> class varray
         return *this;
     }
 
-    inline constexpr std::size_t size()
+    inline constexpr std::size_t size() const
     {
         return size_;
     }
 
-    inline constexpr std::size_t vsize()
+    inline constexpr std::size_t vsize() const
     {
         return vsize_;
     }

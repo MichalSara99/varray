@@ -27,7 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="varray_t.cpp">
+    <ClCompile Include="unit_tests\varray_t.cpp">
       <Filter>unit_tests</Filter>
     </ClCompile>
   </ItemGroup>
