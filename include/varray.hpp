@@ -455,6 +455,7 @@ struct slice
 template <typename T> struct slice_varray : public slice
 {
     using value_type = T;
+    using dependent_type = underlying_type_t<T>;
 
     //===
 
@@ -463,25 +464,34 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) = getr<T>(right.ptr_, idx);
+            getw<T>(ptr_, off) = right[idx];
         }
     }
 
-    // void operator=(const _Ty &_Right) const
-    //{
-    //     size_t _Off = _Start;
-    //     for (size_t _Idx = 0; _Idx < _Len; ++_Idx, _Off += _Stride)
-    //     {
-    //         _Myptr[_Off] = _Right;
-    //     }
-    // }
+    void operator=(const T &right) const
+    {
+        size_t off = start;
+        for (size_t idx = 0; idx < count; ++idx, off += inc)
+        {
+            getw<T>(ptr_, off) = right;
+        }
+    }
+
+    template <typename = enable_if_packed<T>> void operator=(const dependent_type &right) const
+    {
+        size_t off = start;
+        for (size_t idx = 0; idx < count; ++idx, off += inc)
+        {
+            getw<T>(ptr_, off) = right;
+        }
+    }
 
     void operator*=(const varray<T> &right) const
     {
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) *= getr<T>(right.ptr_, idx);
+            getw<T>(ptr_, off) *= right[idx];
         }
     }
 
@@ -490,7 +500,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) /= getr<T>(right.ptr_, idx);
+            getw<T>(ptr_, off) /= right[idx];
         }
     }
 
@@ -499,7 +509,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) %= getr<T>(right.ptr_, idx);
+            getw<T>(ptr_, off) %= right[idx];
         }
     }
 
@@ -508,7 +518,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) += getr<T>(right.ptr_, idx);
+            getw<T>(ptr_, off) += right[idx];
         }
     }
 
@@ -517,7 +527,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) -= getr<T>(right.ptr_, idx);
+            getw<T>(ptr_, off) -= right[idx];
         }
     }
 
@@ -526,7 +536,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) ^= getr<T>(right.ptr_, idx);
+            getw<T>(ptr_, off) ^= right[idx];
         }
     }
 
@@ -535,7 +545,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) &= getr<T>(right.ptr_, idx);
+            getw<T>(ptr_, off) &= right[idx];
         }
     }
 
@@ -544,7 +554,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) |= getr<T>(right.ptr_, idx);
+            getw<T>(ptr_, off) |= right[idx];
         }
     }
 
@@ -553,7 +563,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) <<= getr<T>(right.ptr_, idx);
+            getw<T>(ptr_, off) <<= right[idx];
         }
     }
 
@@ -562,7 +572,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) >>= getr<T>(right.ptr_, idx);
+            getw<T>(ptr_, off) >>= right[idx];
         }
     }
 

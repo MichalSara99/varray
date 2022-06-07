@@ -172,4 +172,65 @@ BOOST_AUTO_TEST_CASE(varray_slice)
     BOOST_CHECK_SMALL(slice3[5], 0.01);
 }
 
+BOOST_AUTO_TEST_CASE(slice_operators)
+{
+    const auto val = std::exp(1.0);
+    const auto val2 = 2.0 * val;
+    varray<__m256d> v2(10, val);
+    v2[1] = val2;
+    v2[2] = 2.0 * val2;
+    v2[3] = 3.0 * val2;
+    v2[4] = 4.0 * val2;
+    v2[5] = 5.0 * val2;
+    v2[6] = 6.0 * val2;
+    v2[7] = 7.0 * val2;
+    v2[8] = 8.0 * val2;
+    v2[9] = 9.0 * val2;
+
+    const slice slc1(2, 2, 3);
+
+    varray<__m256d> slice1 = v2[slc1];
+
+    BOOST_CHECK(slc1 == slice(2, 2, 3));
+
+    slice_varray<__m256d> s1 = v2[slc1];
+    varray<__m256d> v3(10, -1000.5);
+
+    s1 = v3;
+
+    decltype(v3) v4 = s1;
+    BOOST_CHECK_EQUAL(v4[0], v3[0]);
+    BOOST_CHECK_EQUAL(v4[1], v3[1]);
+}
+
+BOOST_AUTO_TEST_CASE(slice_operators_1)
+{
+    const auto val = std::exp(1.0);
+    const auto val2 = 2.0 * val;
+    varray<__m256d> v2(10, val);
+    v2[1] = val2;
+    v2[2] = 2.0 * val2;
+    v2[3] = 3.0 * val2;
+    v2[4] = 4.0 * val2;
+    v2[5] = 5.0 * val2;
+    v2[6] = 6.0 * val2;
+    v2[7] = 7.0 * val2;
+    v2[8] = 8.0 * val2;
+    v2[9] = 9.0 * val2;
+
+    const slice slc1(2, 2, 3);
+
+    varray<__m256d> slice1 = v2[slc1];
+
+    BOOST_CHECK(slc1 == slice(2, 2, 3));
+
+    slice_varray<__m256d> s1 = v2[slc1];
+
+    s1 = -1000.5;
+
+    decltype(v2) v3 = s1;
+    BOOST_CHECK_EQUAL(v3[0], -1000.5);
+    BOOST_CHECK_EQUAL(v3[1], -1000.5);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
