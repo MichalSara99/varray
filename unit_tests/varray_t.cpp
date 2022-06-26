@@ -233,4 +233,39 @@ BOOST_AUTO_TEST_CASE(slice_operators_1)
     BOOST_CHECK_EQUAL(v3[1], -1000.5);
 }
 
+BOOST_AUTO_TEST_CASE(slice_operators_2)
+{
+    const auto val = std::exp(1.0);
+    varray<__m256d> v2(10, val);
+    v2[1] = 1.0;
+    v2[2] = 2.0;
+    v2[3] = 3.0;
+    v2[4] = 4.0;
+    v2[5] = 5.0;
+    v2[6] = 6.0;
+    v2[7] = 7.0;
+    v2[8] = 8.0;
+    v2[9] = 9.0;
+
+    const slice slc1(2, 3, 3);
+
+    auto slice1 = v2[slc1];
+    varray<__m256d> cpy(slice1);
+    varray<__m256d> tmp(11, 1.0);
+
+    slice1 = tmp;
+    varray<__m256d> cpy1(slice1);
+
+    BOOST_CHECK_EQUAL(cpy1[0], 1.0);
+    BOOST_CHECK_EQUAL(cpy1[1], 1.0);
+    BOOST_CHECK_EQUAL(cpy1[2], 1.0);
+
+    slice1 = 2345.6789;
+    varray<__m256d> cpy2(slice1);
+
+    BOOST_CHECK_EQUAL(cpy2[0], 2345.6789);
+    BOOST_CHECK_EQUAL(cpy2[1], 2345.6789);
+    BOOST_CHECK_EQUAL(cpy2[2], 2345.6789);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
