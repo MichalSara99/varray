@@ -2,6 +2,7 @@
 #define _VARRAY_HPP_
 
 #include "macros.hpp"
+#include "varray_math.hpp"
 #include "varray_traits.hpp"
 #include "varray_utils.hpp"
 #include <memory>
@@ -352,6 +353,30 @@ template <typename T> class varray
         return getw<T>(ptr_, idx);
     }
 
+    inline const dependent_type &atomicAt(std::size_t idx) const noexcept
+    {
+        VERIFY(idx < size_, "atomicAt: idx out of range");
+        return getr<T>(ptr_, idx);
+    }
+
+    inline dependent_type &atomicAt(std::size_t idx) noexcept
+    {
+        VERIFY(idx < size_, "atomicAt: idx out of range");
+        return getw<T>(ptr_, idx);
+    }
+
+    inline const T &at(std::size_t idx) const noexcept
+    {
+        VERIFY(idx < vsize_, "at: idx out of range");
+        return ptr_[idx];
+    }
+
+    inline T &at(std::size_t idx) noexcept
+    {
+        VERIFY(idx < vsize_, "at: idx out of range");
+        return ptr_[idx];
+    }
+
     varray operator[](slice slicearr) const
     {
         return varray<T>(slice_varray<T>(slicearr, ptr_));
@@ -607,5 +632,201 @@ template <typename T> struct slice_varray : public slice
 
     std::shared_ptr<T[]> ptr_;
 };
+
+template <typename T> _NODISCARD varray<T> abs(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gabs<T>(val.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> acos(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gacos<T>(val.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> asin(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gasin<T>(val.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> atan(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gatan<T>(val.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> atan2(const varray<T> &valY, const varray<T> &valX)
+{
+    VERIFY(valY.vsize() == valX.vsize(), "atan2:vsize differs");
+    VERIFY(valY.size() == valX.size(), "atan2:size differs");
+    const size_t sz = valY.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(valY.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gatan2<T>(valY.at(idx), valX.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> cos(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gcos<T>(val.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> cosh(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gcosh<T>(val.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> exp(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gexp<T>(val.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> log(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = glog<T>(val.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> log10(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = glog10<T>(val.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> pow(const varray<T> &valY, const varray<T> &valX)
+{
+    VERIFY(valY.vsize() == valX.vsize(), "pow:vsize differs");
+    VERIFY(valY.size() == valX.size(), "pow:size differs");
+    const size_t sz = valY.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(valY.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gpow<T>(valY.at(idx), valX.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> sin(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gsin<T>(val.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> sinh(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gsinh<T>(val.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> sqrt(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gsqrt<T>(val.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> tan(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gtan<T>(val.at(idx));
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD varray<T> tanh(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    const size_t stride = length_of_type<T>();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx += stride)
+    {
+        ans.at(idx) = gtanh<T>(val.at(idx));
+    }
+    return ans;
+}
 
 #endif ///_VARRAY_HPP_

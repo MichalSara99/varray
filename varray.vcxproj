@@ -299,6 +299,7 @@
   <ItemGroup>
     <ClInclude Include="include\macros.hpp" />
     <ClInclude Include="include\varray.hpp" />
+    <ClInclude Include="include\varray_math.hpp" />
     <ClInclude Include="include\varray_traits.hpp" />
     <ClInclude Include="include\varray_utils.hpp" />
   </ItemGroup>
