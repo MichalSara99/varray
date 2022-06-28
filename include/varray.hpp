@@ -231,6 +231,7 @@ template <typename T> class varray
         return *this;
     }
 
+    // TODO: from now on use intrinsics on packed types whenever possible:
     varray &operator*=(const varray<T> &right)
     {
         const size_t sz = size();
@@ -511,6 +512,7 @@ template <typename T> struct slice_varray : public slice
         }
     }
 
+    // TODO: from now on use intrinsics on packed types whenever possible:
     void operator*=(const varray<T> &right) const
     {
         size_t off = start;
