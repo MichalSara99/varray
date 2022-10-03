@@ -2,9 +2,7 @@
 #define _VARRAY_HPP_
 
 #include "macros.hpp"
-#include "varray_math.hpp"
 #include "varray_traits.hpp"
-#include "varray_utils.hpp"
 #include <memory>
 
 // FORWARD REFERENCES:
@@ -15,23 +13,24 @@ template <typename T> struct slice_varray;
 /**
 
     @class   varray
-    @brief   array that supports vectorised intrinsics types __m256,__256d (AVX, AVX2)
+    @brief   array that supports vectorised types vsd4, vsf8 (AVX, AVX2)
     @details ~
-    @tparam  T - double, float, __m256, __m256d
+    @tparam  T - double, float, long double, vsd4, vsf8
 
 **/
-template <typename T> class varray
+template <typename T>
+    requires(floating_point_ext<T>)
+class varray
 {
-
   private:
     std::size_t size_;
     std::size_t vsize_;
     std::shared_ptr<T[]> ptr_;
 
   public:
-    using value_type = T;
-    using dependent_type = underlying_type_t<T>;
-    static constexpr size_t length_type = length_of_type<T>();
+    using element_type = T;
+    using scalar_type = packed_t<T>;
+    static constexpr size_t element_length = packed<T>::length;
 
     varray() noexcept
     {
@@ -45,12 +44,6 @@ template <typename T> class varray
     }
 
     varray(std::size_t size, T val) noexcept
-    {
-        init_();
-        grow_(size, val);
-    }
-
-    template <typename = enable_if_packed<T>> varray(std::size_t size, dependent_type val) noexcept
     {
         init_();
         grow_(size, val);
@@ -91,9 +84,9 @@ template <typename T> class varray
     {
         const size_t sz = size();
         varray<T> ans(sz);
-        for (size_t idx = 0; idx < sz; ++idx)
+        for (size_t idx = 0; idx < ans.vsize(); ++idx)
         {
-            ans[idx] = +getr<T>(ptr_, idx);
+            ans[idx] = +element_at(idx);
         }
         return ans;
     }
@@ -102,9 +95,9 @@ template <typename T> class varray
     {
         const size_t sz = size();
         varray<T> ans(sz);
-        for (size_t idx = 0; idx < sz; ++idx)
+        for (size_t idx = 0; idx < ans.vsize(); ++idx)
         {
-            ans[idx] = -getr<T>(ptr_, idx);
+            ans[idx] = -element_at(idx);
         }
         return ans;
     }
@@ -113,9 +106,9 @@ template <typename T> class varray
     {
         const size_t sz = size();
         varray<T> ans(sz);
-        for (size_t idx = 0; idx < sz; ++idx)
+        for (size_t idx = 0; idx < ans.vsize(); ++idx)
         {
-            ans[idx] = ~getr<T>(ptr_, idx);
+            ans[idx] = ~element_at(idx);
         }
         return ans;
     }
@@ -131,102 +124,102 @@ template <typename T> class varray
     //    return _Ans;
     //}
 
-    varray &operator*=(const dependent_type &right)
+    varray &operator*=(const element_type &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) *= right;
+            element_at(idx) *= right;
         }
         return *this;
     }
 
-    varray &operator/=(const dependent_type &right)
+    varray &operator/=(const element_type &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) /= right;
+            element_at(idx) /= right;
         }
         return *this;
     }
 
-    varray &operator%=(const dependent_type &right)
+    varray &operator%=(const element_type &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) %= right;
+            element_at(idx) %= right;
         }
         return *this;
     }
 
-    varray &operator+=(const dependent_type &right)
+    varray &operator+=(const element_type &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) += right;
+            element_at(idx) += right;
         }
         return *this;
     }
 
-    varray &operator-=(const dependent_type &right)
+    varray &operator-=(const element_type &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) -= right;
+            element_at(idx) -= right;
         }
         return *this;
     }
 
-    varray &operator^=(const dependent_type &right)
+    varray &operator^=(const element_type &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) ^= right;
+            element_at(idx) ^= right;
         }
         return *this;
     }
 
-    varray &operator&=(const dependent_type &right)
+    varray &operator&=(const element_type &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) &= right;
+            element_at(idx) &= right;
         }
         return *this;
     }
 
-    varray &operator|=(const dependent_type &right)
+    varray &operator|=(const element_type &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) |= right;
+            element_at(idx) |= right;
         }
         return *this;
     }
 
-    varray &operator<<=(const dependent_type &right)
+    varray &operator<<=(const element_type &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) <<= right;
+            element_at(idx) <<= right;
         }
         return *this;
     }
 
-    varray &operator>>=(const dependent_type &right)
+    varray &operator>>=(const element_type &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) >>= right;
+            element_at(idx) >>= right;
         }
         return *this;
     }
@@ -234,100 +227,100 @@ template <typename T> class varray
     // TODO: from now on use intrinsics on packed types whenever possible:
     varray &operator*=(const varray<T> &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) *= right[idx];
+            element_at(idx) *= right[idx];
         }
         return *this;
     }
 
     varray &operator/=(const varray<T> &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) /= right[idx];
+            element_at(idx) /= right[idx];
         }
         return *this;
     }
 
     varray &operator%=(const varray<T> &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) %= right[idx];
+            element_at(idx) %= right[idx];
         }
         return *this;
     }
 
     varray &operator+=(const varray<T> &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) += right[idx];
+            element_at(idx) += right[idx];
         }
         return *this;
     }
 
     varray &operator-=(const varray<T> &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) -= right[idx];
+            element_at(idx) -= right[idx];
         }
         return *this;
     }
 
     varray &operator^=(const varray<T> &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) ^= right[idx];
+            element_at(idx) ^= right[idx];
         }
         return *this;
     }
 
     varray &operator|=(const varray<T> &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) |= right[idx];
+            element_at(idx) |= right[idx];
         }
         return *this;
     }
 
     varray &operator&=(const varray<T> &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) &= right[idx];
+            element_at(idx) &= right[idx];
         }
         return *this;
     }
 
     varray &operator<<=(const varray<T> &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) <<= right[idx];
+            element_at(idx) <<= right[idx];
         }
         return *this;
     }
 
     varray &operator>>=(const varray<T> &right)
     {
-        const size_t sz = size();
-        for (size_t idx = 0; idx < sz; ++idx)
+        const size_t vsz = vsize();
+        for (size_t idx = 0; idx < vsz; ++idx)
         {
-            getw<T>(ptr_, idx) >>= right[idx];
+            element_at(idx) >>= right[idx];
         }
         return *this;
     }
@@ -342,40 +335,39 @@ template <typename T> class varray
         return vsize_;
     }
 
-    inline const dependent_type &operator[](std::size_t idx) const noexcept
+    inline const element_type &operator[](std::size_t idx) const noexcept
     {
-        VERIFY(idx < size_, "operator[]: idx out of range");
-        return getr<T>(ptr_, idx);
-    }
-
-    inline dependent_type &operator[](std::size_t idx) noexcept
-    {
-        VERIFY(idx < size_, "operator[]: idx out of range");
-        return getw<T>(ptr_, idx);
-    }
-
-    inline const dependent_type &atomicAt(std::size_t idx) const noexcept
-    {
-        VERIFY(idx < size_, "atomicAt: idx out of range");
-        return getr<T>(ptr_, idx);
-    }
-
-    inline dependent_type &atomicAt(std::size_t idx) noexcept
-    {
-        VERIFY(idx < size_, "atomicAt: idx out of range");
-        return getw<T>(ptr_, idx);
-    }
-
-    inline const T &at(std::size_t idx) const noexcept
-    {
-        VERIFY(idx < vsize_, "at: idx out of range");
+        VERIFY(idx < vsize_, "operator[]: idx out of range");
         return ptr_[idx];
     }
 
-    inline T &at(std::size_t idx) noexcept
+    inline element_type &operator[](std::size_t idx) noexcept
     {
-        VERIFY(idx < vsize_, "at: idx out of range");
+        VERIFY(idx < vsize_, "operator[]: idx out of range");
         return ptr_[idx];
+    }
+
+    inline const element_type &element_at(std::size_t idx) const noexcept
+    {
+        VERIFY(idx < vsize_, "element_at(): idx out of range");
+        return ptr_[idx];
+    }
+
+    inline element_type &element_at(std::size_t idx) noexcept
+    {
+        VERIFY(idx < vsize_, "element_at(): idx out of range");
+        return ptr_[idx];
+    }
+
+    inline const scalar_type &scalar_at(std::size_t idx) const noexcept
+    {
+        return scalar_at_(ptr_, idx);
+    }
+
+    inline scalar_type &scalar_at(std::size_t idx) noexcept
+    {
+        VERIFY(idx < size_, "scalar_at(): idx out of range");
+        return reinterpret_cast<scalar_type *>(ptr_.get())[idx];
     }
 
     varray operator[](slice slicearr) const
@@ -391,8 +383,8 @@ template <typename T> class varray
   private:
     std::size_t get_vsize(std::size_t new_size)
     {
-        std::size_t count = new_size / length_type;
-        if (new_size % length_type > 0)
+        std::size_t count = new_size / element_length;
+        if (new_size % element_length > 0)
         {
             count++;
         }
@@ -430,6 +422,12 @@ template <typename T> class varray
         }
     }
 
+    inline const scalar_type &scalar_at_(const std::shared_ptr<T[]> &ptr, std::size_t idx) const noexcept
+    {
+        VERIFY(idx < size_, "scalarAt(): idx out of range");
+        return reinterpret_cast<const scalar_type *>(ptr.get())[idx];
+    }
+
     void grow_(std::size_t new_size, const std::shared_ptr<T[]> &ptr, std::size_t start, std::size_t inc)
     {
         if (new_size > 0)
@@ -440,21 +438,7 @@ template <typename T> class varray
             std::size_t stride = start;
             for (std::size_t t = 0; t < size_; ++t, stride += inc)
             {
-                getw<T>(ptr_, t) = getr<T>(ptr, stride);
-            }
-        }
-    }
-
-    template <typename = enable_if_packed<T>> void grow_(std::size_t new_size, dependent_type val)
-    {
-        if (new_size > 0)
-        {
-            size_ = new_size;
-            vsize_ = get_vsize(new_size);
-            ptr_.reset(new T[vsize_]);
-            for (std::size_t t = 0; t < vsize_; ++t)
-            {
-                ptr_[t] = _mm256_set1(val);
+                scalar_at(t) = scalar_at_(ptr, stride);
             }
         }
     }
@@ -480,8 +464,9 @@ struct slice
 
 template <typename T> struct slice_varray : public slice
 {
-    using value_type = T;
-    using dependent_type = underlying_type_t<T>;
+    using element_type = T;
+    using scalar_type = packed_t<T>;
+    static constexpr size_t length = packed<T>::length;
 
     //===
 
@@ -490,25 +475,16 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) = right[idx];
+            ptr_[off] = right[idx];
         }
     }
 
-    void operator=(const T &right) const
+    void operator=(const element_type &right) const
     {
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) = right;
-        }
-    }
-
-    template <typename = enable_if_packed<T>> void operator=(const dependent_type &right) const
-    {
-        size_t off = start;
-        for (size_t idx = 0; idx < count; ++idx, off += inc)
-        {
-            getw<T>(ptr_, off) = right;
+            ptr_[off] = right;
         }
     }
 
@@ -518,7 +494,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) *= right[idx];
+            ptr_[off] *= right[idx];
         }
     }
 
@@ -527,7 +503,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) /= right[idx];
+            ptr_[off] /= right[idx];
         }
     }
 
@@ -536,7 +512,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) %= right[idx];
+            ptr_[off] %= right[idx];
         }
     }
 
@@ -545,7 +521,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) += right[idx];
+            ptr_[off] += right[idx];
         }
     }
 
@@ -554,7 +530,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) -= right[idx];
+            ptr_[off] -= right[idx];
         }
     }
 
@@ -563,7 +539,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) ^= right[idx];
+            ptr_[off] ^= right[idx];
         }
     }
 
@@ -572,7 +548,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) &= right[idx];
+            ptr_[off] &= right[idx];
         }
     }
 
@@ -581,7 +557,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) |= right[idx];
+            ptr_[off] |= right[idx];
         }
     }
 
@@ -590,7 +566,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) <<= right[idx];
+            ptr_[off] <<= right[idx];
         }
     }
 
@@ -599,7 +575,7 @@ template <typename T> struct slice_varray : public slice
         size_t off = start;
         for (size_t idx = 0; idx < count; ++idx, off += inc)
         {
-            getw<T>(ptr_, off) >>= right[idx];
+            ptr_[off] >>= right[idx];
         }
     }
 
@@ -620,7 +596,7 @@ template <typename T> struct slice_varray : public slice
         std::size_t src_start = right.start;
         for (std::size_t idx = 0; idx < count; ++idx, dst_start += inc, src_start += right.inc)
         {
-            getw<T>(ptr_, idx) = getr<T>(right.ptr_, idx);
+            ptr_[idx] = right.ptr_[idx];
         }
         return *this;
     }
@@ -634,201 +610,201 @@ template <typename T> struct slice_varray : public slice
 
     std::shared_ptr<T[]> ptr_;
 };
-
-template <typename T> _NODISCARD varray<T> abs(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gabs<T>(val.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> acos(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gacos<T>(val.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> asin(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gasin<T>(val.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> atan(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gatan<T>(val.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> atan2(const varray<T> &valY, const varray<T> &valX)
-{
-    VERIFY(valY.vsize() == valX.vsize(), "atan2:vsize differs");
-    VERIFY(valY.size() == valX.size(), "atan2:size differs");
-    const size_t sz = valY.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(valY.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gatan2<T>(valY.at(idx), valX.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> cos(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gcos<T>(val.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> cosh(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gcosh<T>(val.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> exp(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gexp<T>(val.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> log(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = glog<T>(val.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> log10(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = glog10<T>(val.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> pow(const varray<T> &valY, const varray<T> &valX)
-{
-    VERIFY(valY.vsize() == valX.vsize(), "pow:vsize differs");
-    VERIFY(valY.size() == valX.size(), "pow:size differs");
-    const size_t sz = valY.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(valY.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gpow<T>(valY.at(idx), valX.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> sin(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gsin<T>(val.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> sinh(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gsinh<T>(val.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> sqrt(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gsqrt<T>(val.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> tan(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gtan<T>(val.at(idx));
-    }
-    return ans;
-}
-
-template <typename T> _NODISCARD varray<T> tanh(const varray<T> &val)
-{
-    const size_t sz = val.vsize();
-    const size_t stride = length_of_type<T>();
-    varray<T> ans(val.size());
-    for (std::size_t idx = 0; idx < sz; idx += stride)
-    {
-        ans.at(idx) = gtanh<T>(val.at(idx));
-    }
-    return ans;
-}
+//
+// template <typename T> _NODISCARD varray<T> abs(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gabs<T>(val.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> acos(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gacos<T>(val.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> asin(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gasin<T>(val.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> atan(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gatan<T>(val.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> atan2(const varray<T> &valY, const varray<T> &valX)
+//{
+//    VERIFY(valY.vsize() == valX.vsize(), "atan2:vsize differs");
+//    VERIFY(valY.size() == valX.size(), "atan2:size differs");
+//    const size_t sz = valY.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(valY.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gatan2<T>(valY.at(idx), valX.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> cos(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gcos<T>(val.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> cosh(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gcosh<T>(val.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> exp(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gexp<T>(val.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> log(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = glog<T>(val.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> log10(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = glog10<T>(val.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> pow(const varray<T> &valY, const varray<T> &valX)
+//{
+//    VERIFY(valY.vsize() == valX.vsize(), "pow:vsize differs");
+//    VERIFY(valY.size() == valX.size(), "pow:size differs");
+//    const size_t sz = valY.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(valY.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gpow<T>(valY.at(idx), valX.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> sin(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gsin<T>(val.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> sinh(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gsinh<T>(val.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> sqrt(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gsqrt<T>(val.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> tan(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gtan<T>(val.at(idx));
+//    }
+//    return ans;
+//}
+//
+// template <typename T> _NODISCARD varray<T> tanh(const varray<T> &val)
+//{
+//    const size_t sz = val.vsize();
+//    const size_t stride = length_of_type<T>();
+//    varray<T> ans(val.size());
+//    for (std::size_t idx = 0; idx < sz; idx += stride)
+//    {
+//        ans.at(idx) = gtanh<T>(val.at(idx));
+//    }
+//    return ans;
+//}
 
 #endif ///_VARRAY_HPP_

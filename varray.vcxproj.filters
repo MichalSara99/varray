@@ -27,6 +27,12 @@
     <ClInclude Include="include\varray_math.hpp">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\vsd4.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vsf8.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
