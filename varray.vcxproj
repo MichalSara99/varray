@@ -297,27 +297,21 @@
     </Natvis>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\macros.hpp" />
-    <ClInclude Include="include\varray.hpp" />
-    <ClInclude Include="include\varray_math.hpp" />
-    <ClInclude Include="include\varray_traits.hpp" />
-    <ClInclude Include="include\varray_utils.hpp" />
-    <ClInclude Include="include\vsd4.hpp" />
-    <ClInclude Include="include\vsf8.hpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="main.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Unit Tests Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Unit Tests Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Unit Tests Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Unit Tests Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Unit Tests Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Unit Tests Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="unit_tests\varray_t.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\macros\macros.hpp" />
+    <ClInclude Include="include\varray\varray.hpp" />
+    <ClInclude Include="include\varray\varray_math.hpp" />
+    <ClInclude Include="include\varray\varray_utils.hpp" />
+    <ClInclude Include="include\vectorised_types\vdouble4.hpp" />
+    <ClInclude Include="include\vectorised_types\vfloat8.hpp" />
+    <ClInclude Include="include\vectorised_types\vtype_traits.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

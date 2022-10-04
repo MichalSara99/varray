@@ -1,28 +1,28 @@
-#if !defined(_VSD4_HPP_)
-#define _VSD4_HPP_
+#if !defined(_VDOUBLE4_HPP_)
+#define _VDOUBLE4_HPP_
 
 #include <immintrin.h>
 #include <iostream>
 #include <typeinfo>
 
 /**
-    @struct vsd4
+    @struct vdouble4
     @brief  Packed double-precision type
 **/
-struct vsd4 : public __m256d
+struct vdouble4 : public __m256d
 {
   public:
     using value_type = double;
     constexpr static std::size_t length = sizeof(__m256d) / sizeof(value_type);
 
-    vsd4(){};
-    explicit vsd4(const __m256d x) : __m256d(x)
+    vdouble4(){};
+    explicit vdouble4(const __m256d x) : __m256d(x)
     {
     }
-    vsd4(double x) : __m256d(_mm256_set1_pd(x))
+    vdouble4(double x) : __m256d(_mm256_set1_pd(x))
     {
     }
-    vsd4(double x0, double x1, double x2, double x3) : __m256d(_mm256_setr_pd(x0, x1, x2, x3))
+    vdouble4(double x0, double x1, double x2, double x3) : __m256d(_mm256_setr_pd(x0, x1, x2, x3))
     {
     }
 
@@ -36,10 +36,10 @@ struct vsd4 : public __m256d
         return reinterpret_cast<value_type *>(this)[idx];
     }
 
-    friend std::ostream &operator<<(std::ostream &out, const vsd4 &x)
+    friend std::ostream &operator<<(std::ostream &out, const vdouble4 &x)
     {
         return out << "(" << x[0] << "," << x[1] << "," << x[2] << "," << x[3] << ")";
     }
 };
 
-#endif //_VSD4_HPP_
+#endif //_VDOUBLE4_HPP_

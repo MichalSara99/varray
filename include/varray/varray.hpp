@@ -1,8 +1,8 @@
 #if !defined(_VARRAY_HPP_)
 #define _VARRAY_HPP_
 
-#include "macros.hpp"
-#include "varray_traits.hpp"
+#include "../macros/macros.hpp"
+#include "../vectorised_types/vtype_traits.hpp"
 #include <memory>
 
 // FORWARD REFERENCES:

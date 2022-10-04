@@ -4,40 +4,43 @@
     <Filter Include="include">
       <UniqueIdentifier>{bec3ef6f-7c52-4559-9608-4885701926ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="unit_tests">
-      <UniqueIdentifier>{fd15b44b-f6ed-4d33-b727-62790ea3cbaa}</UniqueIdentifier>
+    <Filter Include="include\varray">
+      <UniqueIdentifier>{09f38404-7cca-44e6-986a-e8f1508ebd6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\vectorised_types">
+      <UniqueIdentifier>{b2babc03-143f-4230-bcbb-6d4c746c6344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\macros">
+      <UniqueIdentifier>{7f340456-9644-42fb-a553-3c93e9c174f5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="varray.natvis" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\macros.hpp">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\varray.hpp">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\varray_traits.hpp">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\varray_utils.hpp">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\varray_math.hpp">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vsd4.hpp">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vsf8.hpp">
-      <Filter>include</Filter>
-    </ClInclude>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="unit_tests\varray_t.cpp">
-      <Filter>unit_tests</Filter>
-    </ClCompile>
+    <ClInclude Include="include\macros\macros.hpp">
+      <Filter>include\macros</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vectorised_types\vdouble4.hpp">
+      <Filter>include\vectorised_types</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vectorised_types\vfloat8.hpp">
+      <Filter>include\vectorised_types</Filter>
+    </ClInclude>
+    <ClInclude Include="include\varray\varray.hpp">
+      <Filter>include\varray</Filter>
+    </ClInclude>
+    <ClInclude Include="include\varray\varray_math.hpp">
+      <Filter>include\varray</Filter>
+    </ClInclude>
+    <ClInclude Include="include\varray\varray_utils.hpp">
+      <Filter>include\varray</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vectorised_types\vtype_traits.hpp">
+      <Filter>include\vectorised_types</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
