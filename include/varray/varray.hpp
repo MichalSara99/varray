@@ -37,7 +37,7 @@ class varray
         init_();
     }
 
-    varray(std::size_t size) noexcept
+    explicit varray(std::size_t size) noexcept
     {
         init_();
         grow_(size);
@@ -49,7 +49,7 @@ class varray
         grow_(size, val);
     }
 
-    varray(const slice_varray<T> &slicearr)
+    explicit varray(const slice_varray<T> &slicearr)
     {
         init_();
         *this = slicearr;
@@ -61,7 +61,7 @@ class varray
     varray deepcopy() const
     {
         varray tmp(size());
-        for (std::size_t i = 0; i < tmp.size(); ++i)
+        for (std::size_t i = 0; i < tmp.vsize(); ++i)
             tmp[i] = this->operator[](i);
         return tmp;
     }
@@ -124,7 +124,7 @@ class varray
     //    return _Ans;
     //}
 
-    varray &operator*=(const element_type &right)
+    varray &operator*=(const element_type right)
     {
         const size_t vsz = vsize();
         for (size_t idx = 0; idx < vsz; ++idx)
@@ -134,7 +134,7 @@ class varray
         return *this;
     }
 
-    varray &operator/=(const element_type &right)
+    varray &operator/=(const element_type right)
     {
         const size_t vsz = vsize();
         for (size_t idx = 0; idx < vsz; ++idx)
@@ -144,7 +144,7 @@ class varray
         return *this;
     }
 
-    varray &operator%=(const element_type &right)
+    varray &operator%=(const element_type right)
     {
         const size_t vsz = vsize();
         for (size_t idx = 0; idx < vsz; ++idx)
@@ -154,7 +154,7 @@ class varray
         return *this;
     }
 
-    varray &operator+=(const element_type &right)
+    varray &operator+=(const element_type right)
     {
         const size_t vsz = vsize();
         for (size_t idx = 0; idx < vsz; ++idx)
@@ -164,7 +164,7 @@ class varray
         return *this;
     }
 
-    varray &operator-=(const element_type &right)
+    varray &operator-=(const element_type right)
     {
         const size_t vsz = vsize();
         for (size_t idx = 0; idx < vsz; ++idx)
@@ -174,7 +174,7 @@ class varray
         return *this;
     }
 
-    varray &operator^=(const element_type &right)
+    varray &operator^=(const element_type right)
     {
         const size_t vsz = vsize();
         for (size_t idx = 0; idx < vsz; ++idx)
@@ -184,7 +184,7 @@ class varray
         return *this;
     }
 
-    varray &operator&=(const element_type &right)
+    varray &operator&=(const element_type right)
     {
         const size_t vsz = vsize();
         for (size_t idx = 0; idx < vsz; ++idx)
@@ -194,7 +194,7 @@ class varray
         return *this;
     }
 
-    varray &operator|=(const element_type &right)
+    varray &operator|=(const element_type right)
     {
         const size_t vsz = vsize();
         for (size_t idx = 0; idx < vsz; ++idx)
@@ -204,7 +204,7 @@ class varray
         return *this;
     }
 
-    varray &operator<<=(const element_type &right)
+    varray &operator<<=(const element_type right)
     {
         const size_t vsz = vsize();
         for (size_t idx = 0; idx < vsz; ++idx)
@@ -214,7 +214,7 @@ class varray
         return *this;
     }
 
-    varray &operator>>=(const element_type &right)
+    varray &operator>>=(const element_type right)
     {
         const size_t vsz = vsize();
         for (size_t idx = 0; idx < vsz; ++idx)

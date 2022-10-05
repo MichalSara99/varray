@@ -20,7 +20,7 @@ struct vfloat8
     constexpr static std::size_t length = sizeof(__m256) / sizeof(value_type);
 
     vfloat8(){};
-    explicit vfloat8(const __m256 x) : pack(x)
+    vfloat8(const __m256 x) : pack(x)
     {
     }
     vfloat8(float x) : pack(_mm256_set1_ps(x))
@@ -29,6 +29,11 @@ struct vfloat8
     vfloat8(float x0, float x1, float x2, float x3, float x4, float x5, float x6, float x7)
         : pack(_mm256_setr_ps(x0, x1, x2, x3, x4, x5, x6, x7))
     {
+    }
+
+    operator __m256() const
+    {
+        return pack;
     }
 
     const value_type &operator[](std::size_t idx) const
@@ -45,6 +50,30 @@ struct vfloat8
     {
         return out << "(" << x[0] << "," << x[1] << "," << x[2] << "," << x[3] << "," << x[4] << "," << x[5] << ","
                    << x[6] << "," << x[7] << ")";
+    }
+
+    vfloat8 &operator+=(const vfloat8 x)
+    {
+        pack = _mm256_add_ps(pack, x);
+        return *this;
+    }
+
+    vfloat8 &operator-=(const vfloat8 x)
+    {
+        pack = _mm256_sub_ps(pack, x);
+        return *this;
+    }
+
+    vfloat8 &operator*=(const vfloat8 x)
+    {
+        pack = _mm256_mul_ps(pack, x);
+        return *this;
+    }
+
+    vfloat8 &operator/=(const vfloat8 x)
+    {
+        pack = _mm256_div_ps(pack, x);
+        return *this;
     }
 };
 
