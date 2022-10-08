@@ -4,6 +4,7 @@
 
 #include "vdouble4.hpp"
 #include "vfloat8.hpp"
+#include <format>
 #include <immintrin.h>
 #include <type_traits>
 
@@ -35,5 +36,20 @@ inline constexpr bool is_floating_point_ext_v =
 
 template <typename T>
 concept floating_point_ext = is_floating_point_ext_v<T>;
+
+namespace std
+{
+
+_NODISCARD inline string to_string(const vdouble4 val)
+{
+    return std::format("({},{},{},{})", val[0], val[1], val[2], val[3]);
+}
+
+_NODISCARD inline string to_string(const vfloat8 val)
+{
+    return std::format("({},{},{},{},{},{},{},{})", val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7]);
+}
+
+} // namespace std
 
 #endif //_VTYPE_TRAITS_HPP_

@@ -311,6 +311,7 @@
     <ClInclude Include="include\varray\varray_utils.hpp" />
     <ClInclude Include="include\vectorised_types\vdouble4.hpp" />
     <ClInclude Include="include\vectorised_types\vfloat8.hpp" />
+    <ClInclude Include="include\vectorised_types\vmath.hpp" />
     <ClInclude Include="include\vectorised_types\vtype_traits.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

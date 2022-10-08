@@ -11,12 +11,13 @@
 **/
 struct vdouble4 : public __m256d
 {
+
   public:
     using value_type = double;
     constexpr static std::size_t length = sizeof(__m256d) / sizeof(value_type);
 
-    vdouble4(){};
-    vdouble4(const __m256d x) : __m256d(x)
+    constexpr vdouble4(){};
+    constexpr vdouble4(const __m256d x) : __m256d(x)
     {
     }
     vdouble4(double x) : __m256d(_mm256_set1_pd(x))
@@ -179,6 +180,17 @@ static inline const vdouble4 max(const vdouble4 x, const vdouble4 y)
     return _mm256_max_pd(x, y);
 }
 
+/**
+    @brief  operator%
+    @param  x - vdouble4 arg
+    @param  y - vdouble4 arg
+    @retval   - return x mod y
+**/
+static inline const vdouble4 operator%(const vdouble4 x, const vdouble4 y)
+{
+    return _mm256_fmod_pd(x, y);
+}
+
 // ================== bitwise operations ===================
 
 /**
@@ -335,4 +347,9 @@ static inline const vdouble4 blend(const vdouble4 then, const vdouble4 els, cons
 {
     return _mm256_blendv_pd(els, then, ifmask);
 }
+
+// ======================================================================
+// =========================== OTHER functions ==========================
+// ======================================================================
+
 #endif //_VDOUBLE4_HPP_

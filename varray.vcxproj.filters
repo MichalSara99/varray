@@ -42,5 +42,8 @@
     <ClInclude Include="include\vectorised_types\vtype_traits.hpp">
       <Filter>include\vectorised_types</Filter>
     </ClInclude>
+    <ClInclude Include="include\vectorised_types\vmath.hpp">
+      <Filter>include\vectorised_types</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

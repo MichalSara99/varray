@@ -19,8 +19,8 @@ struct vfloat8
     using value_type = float;
     constexpr static std::size_t length = sizeof(__m256) / sizeof(value_type);
 
-    vfloat8(){};
-    vfloat8(const __m256 x) : pack(x)
+    constexpr vfloat8(){};
+    constexpr vfloat8(const __m256 x) : pack(x)
     {
     }
     vfloat8(float x) : pack(_mm256_set1_ps(x))
@@ -139,6 +139,7 @@ static inline const vfloat8 operator*(const vfloat8 x, const vfloat8 y)
 {
     return _mm256_mul_ps(x, y);
 }
+
 /**
     @brief  operator/
     @param  x - vfloat8 arg
@@ -188,6 +189,17 @@ static inline const vfloat8 min(const vfloat8 x, const vfloat8 y)
 static inline const vfloat8 max(const vfloat8 x, const vfloat8 y)
 {
     return _mm256_max_ps(x, y);
+}
+
+/**
+    @brief  operator%
+    @param  x - vfloat8 arg
+    @param  y - vfloat8 arg
+    @retval   - return x mod y
+**/
+static inline const vfloat8 operator%(const vfloat8 x, const vfloat8 y)
+{
+    return _mm256_fmod_ps(x, y);
 }
 
 // ================== bitwise operations ===================
@@ -346,5 +358,9 @@ static inline const vfloat8 blend(const vfloat8 then, const vfloat8 els, const v
 {
     return _mm256_blendv_ps(els, then, ifmask);
 }
+
+// ======================================================================
+// =========================== OTHER functions ==========================
+// ======================================================================
 
 #endif //_VFLOAT8_HPP_
