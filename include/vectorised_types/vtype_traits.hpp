@@ -4,6 +4,7 @@
 
 #include "vdouble4.hpp"
 #include "vfloat8.hpp"
+#include <cmath>
 #include <format>
 #include <immintrin.h>
 #include <type_traits>
@@ -48,6 +49,16 @@ _NODISCARD inline string to_string(const vdouble4 val)
 _NODISCARD inline string to_string(const vfloat8 val)
 {
     return std::format("({},{},{},{},{},{},{},{})", val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7]);
+}
+
+_NODISCARD inline static double invsqrt(double x)
+{
+    return (1.0 / sqrt(x));
+}
+
+_NODISCARD inline static float invsqrt(float x)
+{
+    return (1.0f / sqrtf(x));
 }
 
 } // namespace std

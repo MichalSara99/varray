@@ -1,203 +1,352 @@
 #if !defined(_VARRAY_MATH_HPP_)
 #define _VARRAY_MATH_HPP_
 
-#include <cmath>
-#include <immintrin.h>
+#include "../macros/macros.hpp"
+#include "../vectorised_types/vmath.hpp"
+#include "varray.hpp"
 #include <type_traits>
 
-const __int32 pos_mask32 = 0x7fffffff;
-const __int64 pos_mask64 = 0x7fffffffffffffff;
-
-template <typename T> _NODISCARD T gabs(T val)
+template <typename T> _NODISCARD static inline varray<T> abs(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::abs(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_and_ps(val, _mm256_castsi256_ps(_mm256_set_epi32(pos_mask32)));
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_and_pd(val, _mm256_castsi256_pd(_mm256_set1_epi64x(pos_mask64)));
-    else
-        static_assert(false, "gabs: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = abs(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T gacos(T val)
+template <typename T> _NODISCARD static inline varray<T> sqrt(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::acos(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_acos_ps(val);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_acos_pd(val);
-    else
-        static_assert(false, "gacos: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = sqrt(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T gasin(T val)
+template <typename T> _NODISCARD static inline varray<T> invsqrt(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::asin(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_asin_ps(val);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_asin_pd(val);
-    else
-        static_assert(false, "gasin: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = invsqrt(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T gatan(T val)
+template <typename T> _NODISCARD static inline varray<T> cbrt(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::atan(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_atan_ps(val);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_atan_pd(val);
-    else
-        static_assert(false, "gatan: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = cbrt(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T gatan2(T valY, T valX)
+template <typename T> _NODISCARD static inline varray<T> invcbrt(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::atan2(valY, valX);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_atan2_ps(valY, valX);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_atan2_pd(valY, valX);
-    else
-        static_assert(false, "gatan2: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = invcbrt(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T gcos(T val)
+template <typename T> _NODISCARD static inline varray<T> ceil(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::cos(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_cos_ps(val);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_cos_pd(val);
-    else
-        static_assert(false, "gcos: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = ceil(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T gcosh(T val)
+template <typename T> _NODISCARD static inline varray<T> floor(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::cosh(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_cosh_ps(val);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_cosh_pd(val);
-    else
-        static_assert(false, "gcosh: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = floor(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T gexp(T val)
+template <typename T> _NODISCARD static inline varray<T> trunc(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::exp(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_exp_ps(val);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_exp_pd(val);
-    else
-        static_assert(false, "gexp: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = trunc(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T glog(T val)
+template <typename T> _NODISCARD static inline varray<T> pow(const varray<T> &valx, const varray<T> &valy)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::log(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_log_ps(val);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_log_pd(val);
-    else
-        static_assert(false, "glog: This cannot happen");
+    const size_t sz = valx.vsize();
+    VERIFY(sz == valy.vsize(), "vsize of valx and valy differs");
+    varray<T> ans(valx.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = pow(valx[idx], valy[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T glog10(T val)
+template <typename T> _NODISCARD static inline varray<T> exp(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::log10(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_log10_ps(val);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_log10_pd(val);
-    else
-        static_assert(false, "glog10: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = exp(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T gpow(T valY, T valX)
+template <typename T> _NODISCARD static inline varray<T> exp10(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::pow(valY, valX);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_pow_ps(valY, valX);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_pow_pd(valY, valX);
-    else
-        static_assert(false, "gpow: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = exp10(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T gsin(T val)
+template <typename T> _NODISCARD static inline varray<T> exp2(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::sin(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_sin_ps(val);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_sin_pd(val);
-    else
-        static_assert(false, "gsin: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = exp2(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T gsinh(T val)
+template <typename T> _NODISCARD static inline varray<T> expm1(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::sinh(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_sinh_ps(val);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_sinh_pd(val);
-    else
-        static_assert(false, "gsinh: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = expm1(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T gsqrt(T val)
+template <typename T> _NODISCARD static inline varray<T> log(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::sqrt(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_sqrt_ps(val);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_sqrt_pd(val);
-    else
-        static_assert(false, "gsqrt: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = log(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T gtan(T val)
+template <typename T> _NODISCARD static inline varray<T> log2(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::tan(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_tan_ps(val);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_tan_pd(val);
-    else
-        static_assert(false, "gtan: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = log2(val[idx]);
+    }
+    return ans;
 }
 
-template <typename T> _NODISCARD T gtanh(T val)
+template <typename T> _NODISCARD static inline varray<T> log10(const varray<T> &val)
 {
-    if constexpr (std::is_same<T, float>::value || std::is_same<T, double>::value)
-        return std::tanh(val);
-    else if constexpr (std::is_same<T, __m256>::value)
-        return _mm256_tanh_ps(val);
-    else if constexpr (std::is_same<T, __m256d>::value)
-        return _mm256_tanh_pd(val);
-    else
-        static_assert(false, "gtanh: This cannot happen");
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = log10(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> sin(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = sin(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> cos(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = cos(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> tan(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = tan(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> asin(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = asin(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> acos(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = acos(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> atan(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = atan(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> atan2(const varray<T> &valx, const varray<T> &valy)
+{
+    const size_t sz = valx.vsize();
+    VERIFY(sz == valy.vsize(), "vsize of valx and valy differs");
+    varray<T> ans(valx.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = atan2(valx[idx], valy[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> sinh(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = sinh(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> cosh(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = cosh(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> tanh(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = tanh(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> asinh(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = asinh(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> acosh(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = acosh(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> atanh(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = atanh(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> erf(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = erf(val[idx]);
+    }
+    return ans;
+}
+
+template <typename T> _NODISCARD static inline varray<T> erfc(const varray<T> &val)
+{
+    const size_t sz = val.vsize();
+    varray<T> ans(val.size());
+    for (std::size_t idx = 0; idx < sz; idx++)
+    {
+        ans[idx] = erfc(val[idx]);
+    }
+    return ans;
 }
 
 #endif ///_VARRAY_MATH_HPP_
