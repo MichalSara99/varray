@@ -34,7 +34,7 @@ bld/
 [Ll]ogs/
 
 # old files
-unit_tests
+unit_tests/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
