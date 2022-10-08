@@ -13,9 +13,9 @@ template <typename T> struct slice_varray;
 /**
 
     @class   varray
-    @brief   array that supports vectorised types vsd4, vsf8 (AVX, AVX2)
+    @brief   array that supports vectorised types vfloat8, vdouble4 (AVX, AVX2)
     @details ~
-    @tparam  T - double, float, long double, vsd4, vsf8
+    @tparam  T - double, float, long double, vfloat8, vdouble4
 
 **/
 template <typename T>
@@ -146,12 +146,13 @@ class varray
 
     varray &operator%=(const element_type right)
     {
-        const size_t vsz = vsize();
-        for (size_t idx = 0; idx < vsz; ++idx)
-        {
-            element_at(idx) %= right;
-        }
-        return *this;
+        throw std::exception("Not implemented.");
+        // const size_t vsz = vsize();
+        // for (size_t idx = 0; idx < vsz; ++idx)
+        //{
+        //     element_at(idx) %= right;
+        // }
+        // return *this;
     }
 
     varray &operator+=(const element_type right)
@@ -247,12 +248,13 @@ class varray
 
     varray &operator%=(const varray<T> &right)
     {
-        const size_t vsz = vsize();
-        for (size_t idx = 0; idx < vsz; ++idx)
-        {
-            element_at(idx) %= right[idx];
-        }
-        return *this;
+        throw std::exception("Not implemented.");
+        // const size_t vsz = vsize();
+        // for (size_t idx = 0; idx < vsz; ++idx)
+        //{
+        //     element_at(idx) %= right[idx];
+        // }
+        // return *this;
     }
 
     varray &operator+=(const varray<T> &right)
