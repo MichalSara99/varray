@@ -36,17 +36,39 @@ inline constexpr bool is_floating_point_ext_v =
     is_any_of_v<std::remove_cv_t<T>, float, double, long double, vdouble4, vfloat8>;
 
 template <typename T>
+inline constexpr bool is_integral_ext_v =
+    is_any_of_v<std::remove_cv_t<T>, bool, char, signed char, unsigned char, wchar_t, vint4, vint8,
+#ifdef __cpp_char8_t
+                char8_t,
+#endif // __cpp_char8_t
+                char16_t, char32_t, short, unsigned short, int, unsigned int, long, unsigned long, long long,
+                unsigned long long>;
+
+template <typename T>
 concept floating_point_ext = is_floating_point_ext_v<T>;
+
+template <typename T>
+concept integral_ext = is_integral_ext_v<T>;
 
 namespace std
 {
 
-_NODISCARD inline string to_string(const vdouble4 val)
+_NODISCARD inline string to_string(const vdouble4 &val)
 {
     return std::format("({},{},{},{})", val[0], val[1], val[2], val[3]);
 }
 
-_NODISCARD inline string to_string(const vfloat8 val)
+_NODISCARD inline string to_string(const vint4 &val)
+{
+    return std::format("({},{},{},{})", val[0], val[1], val[2], val[3]);
+}
+
+_NODISCARD inline string to_string(const vfloat8 &val)
+{
+    return std::format("({},{},{},{},{},{},{},{})", val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7]);
+}
+
+_NODISCARD inline string to_string(const vint8 &val)
 {
     return std::format("({},{},{},{},{},{},{},{})", val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7]);
 }

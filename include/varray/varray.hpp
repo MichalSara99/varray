@@ -462,6 +462,11 @@ struct slice
     }
 };
 
+/**
+    @struct slice_varray
+    @brief
+    @tparam T -
+**/
 template <typename T> struct slice_varray : public slice
 {
     using element_type = T;
