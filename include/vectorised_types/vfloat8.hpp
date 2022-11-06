@@ -620,4 +620,42 @@ static inline vfloat8 blend(const vfloat8 &thenExpr, const vfloat8 &elseExpr, co
 // =========================== OTHER functions ==========================
 // ======================================================================
 
+namespace
+{
+static inline size_t countMaskZeros(const vbool8 &x)
+{
+    return (vbool8::length - _mm_popcnt_u64(_mm256_movemask_ps(_mm256_castsi256_ps(x))));
+}
+} // namespace
+
+/**
+    @brief  Are all elements of the packed bool TRUE
+    @param  x - vbool8 arg
+    @retval   -
+**/
+static inline bool all(const vbool8 &x)
+{
+    return (countMaskZeros(x) == 0);
+}
+
+/**
+    @brief  Are any elements of the packed bool TRUE
+    @param  x -  vbool8 arg
+    @retval   -
+**/
+static inline bool any(const vbool8 &x)
+{
+    return (countMaskZeros(x) != vbool8::length);
+}
+
+/**
+    @brief  Are all elements of the packed bool FALSE
+    @param  x -  vbool8 arg
+    @retval   -
+**/
+static inline bool none(const vbool8 &x)
+{
+    return (countMaskZeros(x) == vbool8::length);
+}
+
 #endif //_VFLOAT8_HPP_

@@ -611,5 +611,41 @@ static inline const vdouble4 blend(const vdouble4 &thenExpr, const vdouble4 &els
 // ======================================================================
 // =========================== OTHER functions ==========================
 // ======================================================================
+namespace
+{
+static inline size_t countMaskZeros(const vbool4 &x)
+{
+    return (vbool4::length - _mm_popcnt_u64(_mm256_movemask_pd(_mm256_castsi256_pd(x))));
+}
+} // namespace
 
+/**
+    @brief  Are all elements of the packed bool TRUE
+    @param  x - vbool4 arg
+    @retval   -
+**/
+static inline bool all(const vbool4 &x)
+{
+    return (countMaskZeros(x) == 0);
+}
+
+/**
+    @brief  Are any elements of the packed bool TRUE
+    @param  x -  vbool4 arg
+    @retval   -
+**/
+static inline bool any(const vbool4 &x)
+{
+    return (countMaskZeros(x) != vbool4::length);
+}
+
+/**
+    @brief  Are all elements of the packed bool FALSE
+    @param  x -  vbool4 arg
+    @retval   -
+**/
+static inline bool none(const vbool4 &x)
+{
+    return (countMaskZeros(x) == vbool4::length);
+}
 #endif //_VDOUBLE4_HPP_
